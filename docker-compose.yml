@@ -1,0 +1,32 @@
+version: "3.7"
+services:
+  db:
+    image: mysql
+    container_name: mysql-cursos-container
+    environment: 
+       MYSQL_ROOT_PASSWORD: ADM_1234 
+    volumes:
+       - .\api\db\data:/var/lib/mysql       
+    command: 
+      --default-authentication-plugin=mysql_native_password      
+    restart: always
+  api:
+    build: "./api"    
+    container_name: node-cursos-container
+    restart: always
+    volumes:
+      - .\api:/home/node/app
+    ports:
+      - "9001:9001"
+    depends_on:
+      - db
+  web:
+      image: "php:7.2-apache"
+      container_name: php-cursos-container
+      volumes:
+        - .\api\website:/var/www/html
+      ports:
+        - "8888:80"
+      depends_on:
+        - db
+        - api
